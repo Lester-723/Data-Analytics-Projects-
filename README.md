@@ -6,7 +6,7 @@ This Project is undertaken using `Python` and `Jupyter notebook`
 
 ### The process of Data Analysis is divided into three sections 
 
-> First Section of this project involves the statistical representation o and Data cleaning
+> First Section of this project involves the statistical representation and Data cleaning
 
 > The Second section involves adding necessary calculated fields in order to generate more insights 
 
