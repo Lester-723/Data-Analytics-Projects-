@@ -11,3 +11,5 @@ This Project is undertaken using `Python` and `Jupyter notebook`
 > The Second section involves adding necessary calculated fields in order to generate more insights 
 
 > Third section is the visual representation of the Data
+
+<font color = "Orange"> Only companies that have appeared consistently from 2019 to 2021 have been considered for the analysis <font>
