@@ -32,6 +32,7 @@ class Stock_analysis():
                 individual_stock_data = pdr.DataReader(ticks, self.start_date)
                 stock_dict.update({f"{ticks}_stock" : individual_stock_data})
                 
+                
     def download_stocks(self, column_name : str):
             self.column_name = column_name
             yf.pdr_override()
