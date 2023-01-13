@@ -18,17 +18,25 @@ from pandas_datareader import data as pdr
 import yfinance as yf
 
 class Stock_analysis():
+    individual_stock_data = pd.DataFrame()
     Stock_Data = pd.DataFrame()
         
     def __init__(self,tickers : list,start_date):
             self.tickers = tickers
-            self.start_date = start_date  
+            self.start_date = start_date
+            stock_dict = {} 
 
-
+    
+    def individual_data(self):
+         for ticks in self.tickers:
+                individual_stock_data = pdr.DataReader(ticks, self.start_date)
+                stock_dict.update({f"{ticks}_stock" : individual_stock_data})
+                
     def download_stocks(self, column_name : str):
             self.column_name = column_name
             yf.pdr_override()
-            Stock_analysis.Stock_Data[ticks] = [pdr.DataReader(ticks, self.start_date)[column_name] for ticks in self.tickers]
+            for ticks in self.tickers:
+                Stock_analysis.Stock_Data[ticks] = pdr.DataReader(ticks, self.start_date)[column_name]
             return Stock_analysis.Stock_Data
 
         
