@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot
 from pandas_datareader import data as pdr
-import yfinance as yf
+
 
 class Stock_analysis():
     individual_stock_data = pd.DataFrame()
@@ -24,15 +24,15 @@ class Stock_analysis():
     def __init__(self,tickers : list,start_date):
             self.tickers = tickers
             self.start_date = start_date
-            stock_dict = {} 
+            
 
     
     def individual_data(self):
          for ticks in self.tickers:
-                individual_stock_data = pdr.DataReader(ticks, self.start_date)
-                stock_dict.update({f"{ticks}_stock" : individual_stock_data})
+                individual_stock_data = pdr.DataReader(ticks.titel, self.start_date)
+                stock_dict.update({f"{ticks.title}_stock" : individual_stock_data})
                 
-                
+
     def download_stocks(self, column_name : str):
             self.column_name = column_name
             yf.pdr_override()
