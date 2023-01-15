@@ -15,12 +15,13 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot
 from pandas_datareader import data as pdr
+import yfinance as yf
 
 
 class Stock_analysis():
     individual_stock_data = pd.DataFrame()
     Stock_Data = pd.DataFrame()
-        
+    stock_dict = {}
     def __init__(self,tickers : list,start_date):
             self.tickers = tickers
             self.start_date = start_date
@@ -28,9 +29,10 @@ class Stock_analysis():
 
     
     def individual_data(self):
+         yf.pdr_override()
          for ticks in self.tickers:
-                individual_stock_data = pdr.DataReader(ticks.titel, self.start_date)
-                stock_dict.update({f"{ticks.title}_stock" : individual_stock_data})
+                individual_stock_data = pdr.DataReader(ticks.title, self.start_date)
+                Stock_analysis.stock_dict.update({f"{ticks.title}_stock" : individual_stock_data})
                 
 
     def download_stocks(self, column_name : str):
@@ -47,7 +49,7 @@ class Stock_analysis():
             self.return_type = return_type
             if return_type == "Log":
                 returns_data = np.log(Stock_analysis.Stock_Data/Stock_analysis.Stock_Data.shift(1))
-            if return_type == "Simple": 
+            else: 
                 returns_data = (Stock_analysis.Stock_Data/Stock_analysis.Stock_Data.shift(1))-1
             return returns_data
 
