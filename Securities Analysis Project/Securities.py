@@ -29,18 +29,35 @@ class Returns_analysis():
             self.start_date = start_date
            
     
-    def individual_data(self):
-         yf.pdr_override()
-         for ticks in self.tickers:
-                individual_stock_data = pdr.DataReader(ticks.title, self.start_date)
-                Returns_Analysis.stock_dict.update({f"{ticks.title}_stock" : individual_stock_data})
-                
-    def download_stocks(self, column_name : str):
-            self.column_name = column_name
-            yf.pdr_override()
-            for ticks in self.tickers:
-               Returns_analysis.Stock_Data[ticks.title] = pdr.DataReader(ticks.title, self.start_date)[column_name]
-            return Returns_analysis.Stock_Data
+    def individual_data(self, fill_method : str):
+        yf.pdr_override()
+        valid_fill_methods = ['linear', 'forward', 'backward']
+        if fill_method not in valid_fill_methods:
+                raise ValueError(f"Invalid fill method. Choose one of {valid_fill_methods}")
+        for ticks in self.tickers:
+                individual_stock_data = pdr.DataReader(ticks, self.start_date)
+                if individual_stock_data.isnull().values.any(): # check if dataframe contains any missing values
+                        if fill_method == 'forward':
+                                individual_stock_data.ffill(inplace=True) # forward fill missing values
+                        elif fill_method == 'backward':
+                                individual_stock_data.bfill(inplace=True) # backward fill missing values
+                        else:
+                                individual_stock_data.interpolate(method=fill_method, inplace=True) # linear fill missing values
+        Returns_Analysis.stock_dict.update({f"{ticks}_stock" : individual_stock_data})
+
+    def download_stocks(self,method, column_name : str):
+        yf.pdr_override()
+        valid_fill_methods = ['linear', 'forward', 'backward']
+        if method not in valid_fill_methods:
+                raise ValueError(f"Invalid fill method. Choose one of {valid_fill_methods}")
+        self.column_name = column_name
+        for ticks in self.tickers:
+                stock_data = pdr.DataReader(ticks, self.start_date)[column_name]
+                stock_data.fillna(method= method, inplace=True)
+                Returns_analysis.Stock_Data[ticks] = stock_data
+        return Returns_analysis.Stock_Data
+
+
 
 
     def calculate_returns(self,return_type):
