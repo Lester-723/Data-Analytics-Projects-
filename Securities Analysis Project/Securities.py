@@ -45,7 +45,8 @@ class Returns_analysis():
                                 individual_stock_data.interpolate(method=fill_method, inplace=True) # linear fill missing values
         Returns_Analysis.stock_dict.update({f"{ticks}_stock" : individual_stock_data})
 
-    def download_stocks(self,method, column_name : str):
+
+    def download_stocks(self, fill_method , column_name : str):
         yf.pdr_override()
         valid_fill_methods = ['linear', 'forward', 'backward']
         if method not in valid_fill_methods:
@@ -58,9 +59,7 @@ class Returns_analysis():
         return Returns_analysis.Stock_Data
 
 
-
-
-    def calculate_returns(self,return_type):
+    def get_returns(self,return_type):
            self.return_type = return_type
            if return_type == "Log":
                 returns_data = np.log(Returns_analysis.Stock_Data/Returns_analysis.Stock_Data.shift(1))
@@ -75,7 +74,7 @@ class Returns_analysis():
             return normalized_figure
     
     def individual_return(self):
-            individual_return = self.calculate_returns(self.return_type).mean()*250*100
+            individual_return = self.get_returns(self.return_type).mean()*250*100
 
             print(f"The {self.return_type} return of the stocks are {round(individual_return,2)}")
         
@@ -83,17 +82,26 @@ class Returns_analysis():
     def portfolio_return(self,weights = list):
             import sys
             weights = np.array(weights)
+            self.weights = weights
             if round(sum(weights),2)!= 1 :
                 raise ValueError(f"Sum of the weight of the porfolio should be 1,The sum of your weights are {sum(weights)}")
                 if len(weights) != Returns_Analysis.Stock_Data.shape[1]:
                     sys.exit("The weights of individual security does not match the no. of securities")
-            annual_returns = np.dot(self.calculate_returns(self.return_type).mean()*250, weights)
+            annual_returns = np.dot(self.get_returns(self.return_type).mean()*250, weights)
 
             print(f"The annual returns of the portfolio is {round(annual_returns, 2)}% ")
 
 
     def individual_risk_factor(self):
-                risk_factor = pd.DataFrame(np.sqrt(self.calculate_returns(self.return_type).var()*250))
+                risk_factor = pd.DataFrame(np.sqrt(self.get_returns(self.return_type).var()*250))
                 print(risk_factor)
 
                 print(f"The lowest risk factor is{risk_factor.min()}")
+
+    def portfolio_variance(self):
+        if self.weights is None:
+            raise ValueError("Weights are not specified")
+        returns = self.get_returns(self.return_type)
+        cov_matrix = np.cov(returns.T)
+        portfolio_variance = np.dot(self.weights.T, np.dot(cov_matrix, self.weights))
+        print(f"The portfolio variance is {round(portfolio_variance, 2)}")
