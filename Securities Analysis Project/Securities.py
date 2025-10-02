@@ -25,7 +25,7 @@ import sys
 
 
 class Stock_returns_analysis():
-    individual_stock_data = pd.DataFrame()
+    combined_df = pd.DataFrame()
     closing_stock_data = pd.DataFrame()
     
    
@@ -35,14 +35,25 @@ class Stock_returns_analysis():
         self.end_date = end_date
            
     
-    def individual_data(self,stock_dict):
+    def merged_data(self):
         yf.pdr_override()
         data = {ticks : pdr.DataReader(ticks, self.start_date, self.end_date) for ticks in self.tickers}
         for ticks, df in data.items(): 
             df.insert(0,column = "Symbol", value = ticks)
-            combined_df = pd.concat(data.values())        
-        return combined_df      
+            Stock_returns_analysis.combined_df = pd.concat(data.values())        
+        return Stock_returns_analysis.combined_df      
 
+    def __len__(self):
+        if self.tickers is not None:
+            return  len(self.tickers)
+        else : 
+            return 0
+
+    def __str__(self):
+        if self.tickers is not None:
+            return f"Stocks: {self.tickers}"
+        else : 
+            return f"Stocks: None"
 
     def download_stocks_closing(self, column_name: str):
         yf.pdr_override()
